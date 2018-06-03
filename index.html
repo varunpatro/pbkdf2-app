@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Generate PBKDF2 Keys Online</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="./sha1.min.js"></script>
+    <script src="./pbkdf2.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css">
+    <style>
+        body {
+            padding: 25px;
+            font-family: 'Lucida Grande';
+        }
+
+        .display-flex {
+            display: flex;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Generate PBKDF2 Keys Online</h1>
+    <div id="app">
+        <form class="pure-form pure-form-aligned">
+            <fieldset>
+                <div class="pure-control-group">
+                    <label for="name">Passphrase</label>
+                    <input v-model="passphrase" type="text" placeholder="Enter Passphrase">
+                </div>
+                <div class="pure-control-group">
+                    <label for="password">Salt</label>
+                    <input v-model="salt" type="text" placeholder="Enter Salt">
+                </div>
+                <div class="pure-control-group">
+                    <label for="iterations">Iter Count</label>
+                    <input v-model="iterations" type="number" placeholder="Enter Num Iterations">
+                </div>
+                <div class="pure-control-group">
+                    <label for="keySizeBytes">Key Size in Bytes</label>
+                    <input v-model="keySizeBytes" type="number" placeholder="Enter Key Length">
+                </div>
+                <div class="pure-controls pure-controls-group">
+                    <button v-on:click="genKey" type="button" class="pure-button pure-button-primary">Generate</button>
+                </div>
+                <div class="pure-control-group display-flex">
+                    <br>
+                    <br>
+                    <br>
+                    <label for="result">Result</label>
+                    <span class="pure-form-inline"> {{ result }} </span>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data: {
+                passphrase: 'passphrase',
+                salt: 'salt',
+                iterations: 10000,
+                keySizeBytes: 16,
+                result: '0%'
+            },
+            methods: {
+                genKey: function() {
+                    var mypbkdf2 = new PBKDF2(this.passphrase, this.salt, this.iterations, this.keySizeBytes);
+                    var status_callback = (percent_done => this.result = Math.floor(percent_done) + "%");
+                    var result_callback = (key => this.result = key);
+                    mypbkdf2.deriveKey(status_callback, result_callback);
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>
